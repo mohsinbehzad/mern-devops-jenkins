@@ -1,0 +1,22 @@
+{
+  "name": "taskmanager-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest --testTimeout=30000 --runInBand --forceExit"
+  },
+  "dependencies": {
+    "chromedriver": "^123.0.0",
+    "selenium-webdriver": "^4.18.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      ["jest-junit", { "outputDirectory": ".", "outputName": "junit.xml" }]
+    ]
+  }
+}

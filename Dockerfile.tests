@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile  –  MERN Task Manager Selenium Tests
+#
+# Base image  : markhobson/maven-chrome:jdk-17
+#               Already contains: JDK 17, Maven, Google Chrome, ChromeDriver
+#               https://hub.docker.com/r/markhobson/maven-chrome
+#
+# Usage:
+#   docker build -t taskmanager-tests .
+#   docker run --rm --network host \
+#              -e APP_URL=http://localhost:3000 \
+#              taskmanager-tests
+# ─────────────────────────────────────────────────────────────────────────────
+FROM markhobson/maven-chrome:jdk-17
+
+WORKDIR /app
+
+# Copy Maven project descriptor first (layer-cache friendly)
+COPY selenium-tests/pom.xml ./pom.xml
+
+# Download all Maven dependencies (cached unless pom.xml changes)
+RUN mvn dependency:go-offline -B
+
+# Copy the actual test source
+COPY selenium-tests/src ./src
+
+# Environment variable for the target app URL
+ENV APP_URL=http://localhost:3000
+
+# Run the tests:
+#   -B          = batch / non-interactive
+#   -Dapp.url   = passed through to TaskManagerTest via system property
+CMD ["sh", "-c", "mvn test -B -Dapp.url=${APP_URL}"]
